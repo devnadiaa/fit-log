@@ -17,61 +17,93 @@ interface Workout {
 }
 
 const MyPlan = () => {
-  const [activeTab, setActiveTab] = useState("plan");
+  const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const planData = localStorage.getItem("fitlog-plan");
-    const savedData = localStorage.getItem("fitlog-saved");
+    const loadData = () => {
+      const planData = localStorage.getItem("fitlog-plan");
+      const savedData = localStorage.getItem("fitlog-saved");
 
-    setWorkouts(planData ? JSON.parse(planData) : []);
-    setSaved(savedData ? JSON.parse(savedData) : []);
-    setLoading(false);
+      const plan = planData ? JSON.parse(planData) : [];
+      const savedWorkouts = savedData ? JSON.parse(savedData) : [];
+
+      setWorkouts(plan);
+      setSaved(savedWorkouts);
+      setLoading(false);
+    };
+
+    loadData();
+
+    window.addEventListener("fitlog-update", loadData);
+
+    return () => {
+      window.removeEventListener("fitlog-update", loadData);
+    };
   }, []);
 
-  const currentWorkouts = activeTab === "plan" ? workouts : saved;
+  const currentWorkouts =
+    activeTab === "plan" ? workouts : saved;
 
-  const totalMinutes = workouts.reduce(
+  const totalMinutes = currentWorkouts.reduce(
     (total, workout) => total + workout.duration,
     0
   );
 
-  const totalCalories = workouts.reduce(
+  const totalCalories = currentWorkouts.reduce(
     (total, workout) => total + workout.caloriesBurned,
     0
   );
 
-  const handleRemove = (id: number) => {
-    const updatedWorkouts = workouts.filter(
+  const handleRemoveFromPlan = (id: number) => {
+    const updatedPlan = workouts.filter(
       (workout) => workout.id !== id
     );
 
-    setWorkouts(updatedWorkouts);
-    localStorage.setItem("fitlog-plan", JSON.stringify(updatedWorkouts));
+    setWorkouts(updatedPlan);
 
-    toast.success("Workout removed");
+    localStorage.setItem(
+      "fitlog-plan",
+      JSON.stringify(updatedPlan)
+    );
+
+    window.dispatchEvent(new Event("fitlog-update"));
+
+    toast.success("Workout removed from today's plan");
   };
 
-  const handleRemoveSaved = (id: number) => {
+  const handleRemoveFromSaved = (id: number) => {
     const updatedSaved = saved.filter(
       (workout) => workout.id !== id
     );
 
     setSaved(updatedSaved);
-    localStorage.setItem("fitlog-saved", JSON.stringify(updatedSaved));
+
+    localStorage.setItem(
+      "fitlog-saved",
+      JSON.stringify(updatedSaved)
+    );
+
+    window.dispatchEvent(new Event("fitlog-update"));
 
     toast.success("Workout removed from saved");
   };
 
   const handleDone = (id: number) => {
-    const updatedWorkouts = workouts.filter(
+    const updatedPlan = workouts.filter(
       (workout) => workout.id !== id
     );
 
-    setWorkouts(updatedWorkouts);
-    localStorage.setItem("fitlog-plan", JSON.stringify(updatedWorkouts));
+    setWorkouts(updatedPlan);
+
+    localStorage.setItem(
+      "fitlog-plan",
+      JSON.stringify(updatedPlan)
+    );
+
+    window.dispatchEvent(new Event("fitlog-update"));
 
     toast.success("Workout completed");
   };
@@ -110,7 +142,7 @@ const MyPlan = () => {
             </p>
 
             <p className="mt-2 text-2xl font-black text-white">
-              {workouts.length}
+              {currentWorkouts.length}
             </p>
           </div>
 
@@ -227,8 +259,8 @@ const MyPlan = () => {
                         <button
                           onClick={() =>
                             activeTab === "plan"
-                              ? handleRemove(workout.id)
-                              : handleRemoveSaved(workout.id)
+                              ? handleRemoveFromPlan(workout.id)
+                              : handleRemoveFromSaved(workout.id)
                           }
                           className="text-zinc-600 transition hover:text-red-400"
                         >
@@ -240,6 +272,7 @@ const MyPlan = () => {
                     <div className="mt-5 flex gap-6">
                       <div className="flex items-center gap-1.5 text-zinc-500">
                         <Clock size={14} />
+
                         <span className="text-[10px] font-bold">
                           {workout.duration} MIN
                         </span>
@@ -247,6 +280,7 @@ const MyPlan = () => {
 
                       <div className="flex items-center gap-1.5 text-zinc-500">
                         <Flame size={14} />
+
                         <span className="text-[10px] font-bold">
                           {workout.caloriesBurned} KCAL
                         </span>
@@ -254,6 +288,7 @@ const MyPlan = () => {
 
                       <div className="flex items-center gap-1.5 text-zinc-500">
                         <span className="text-[#ccff00]">★</span>
+
                         <span className="text-[10px] font-bold">
                           {workout.rating}
                         </span>
