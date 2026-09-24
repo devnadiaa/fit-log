@@ -29,6 +29,7 @@ export default function WorkoutDetails() {
 
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
+  const [planFull, setPlanFull] = useState(false);
 
   useEffect(() => {
     if (!id) {
@@ -63,6 +64,25 @@ export default function WorkoutDetails() {
     loadWorkout();
   }, [id]);
 
+  useEffect(() => {
+    const checkPlan = () => {
+      const savedPlan = localStorage.getItem("fitlog-plan");
+      const plan: Workout[] = savedPlan
+        ? JSON.parse(savedPlan)
+        : [];
+
+      setPlanFull(plan.length >= 5);
+    };
+
+    checkPlan();
+
+    window.addEventListener("fitlog-update", checkPlan);
+
+    return () => {
+      window.removeEventListener("fitlog-update", checkPlan);
+    };
+  }, []);
+
   const handleAddToPlan = () => {
     if (!workout) return;
 
@@ -80,6 +100,7 @@ export default function WorkoutDetails() {
 
     if (plan.length >= 5) {
       toast.warning("Today's plan is full");
+      setPlanFull(true);
       return;
     }
 
@@ -87,6 +108,8 @@ export default function WorkoutDetails() {
       "fitlog-plan",
       JSON.stringify([...plan, workout])
     );
+
+    setPlanFull(plan.length + 1 >= 5);
 
     window.dispatchEvent(new Event("fitlog-update"));
 
@@ -270,10 +293,19 @@ export default function WorkoutDetails() {
             <div className="flex flex-col gap-3 border-t border-zinc-900/80 pt-4 sm:flex-row">
               <button
                 onClick={handleAddToPlan}
-                className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#ccff00] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-black transition-colors hover:bg-[#bbf200]"
+                disabled={planFull}
+                className={`flex flex-1 items-center justify-center gap-2 rounded-md py-3.5 text-[11px] font-extrabold uppercase tracking-wider transition-colors ${
+                  planFull
+                    ? "cursor-not-allowed bg-zinc-800 text-zinc-500"
+                    : "bg-[#ccff00] text-black hover:bg-[#bbf200]"
+                }`}
               >
                 <Plus size={15} />
-                <span>Add to today&apos;s plan</span>
+                <span>
+                  {planFull
+                    ? "Today's plan is full"
+                    : "Add to today's plan"}
+                </span>
               </button>
 
               <button

@@ -1,5 +1,11 @@
 import Image from "next/image";
 import { ArrowDown } from "lucide-react";
+import { Oswald } from "next/font/google";
+
+const oswald = Oswald({
+  subsets: ["latin"],
+  weight: ["700"],
+});
 
 const Banner = () => {
   return (
@@ -10,10 +16,12 @@ const Banner = () => {
             Workout Library
           </span>
 
-          <h1 className="mb-6 font-sans text-4xl font-black uppercase leading-[1.05] tracking-tight text-white md:text-[58px]">
-            Train with intent.
+          <h1
+            className={`${oswald.className} mb-6 text-4xl font-bold uppercase leading-[1.05] tracking-tight text-white md:text-[58px]`}
+          >
+            Train with intent. Log
             <br />
-            Log every set.
+             every set.
           </h1>
 
           <p className="mb-8 max-w-md font-sans text-sm font-medium leading-relaxed text-zinc-400">

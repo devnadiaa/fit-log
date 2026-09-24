@@ -60,7 +60,7 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
         <div className="mt-5 grid grid-cols-3 gap-3 border-t border-zinc-800 pt-4">
           <div>
             <div className="flex items-center gap-1.5 text-zinc-500">
-              <Clock size={13} />
+              <Clock size={13} className="text-[#ccff00]" />
               <p className="text-[10px]">DURATION</p>
             </div>
 
@@ -71,7 +71,7 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
 
           <div>
             <div className="flex items-center gap-1.5 text-zinc-500">
-              <Flame size={13} />
+              <Flame size={13} className="text-[#ccff00]" />
               <p className="text-[10px]">CALORIES</p>
             </div>
 
@@ -82,7 +82,7 @@ const WorkoutCard = ({ workout }: WorkoutCardProps) => {
 
           <div>
             <div className="flex items-center gap-1.5 text-zinc-500">
-              <Star size={13} />
+              <Star size={13} className="text-[#ccff00]" />
               <p className="text-[10px]">RATING</p>
             </div>
 

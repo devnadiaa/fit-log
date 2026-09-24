@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, Flame, Check, X, ChevronDown } from "lucide-react";
+import {
+  Clock,
+  Flame,
+  Check,
+  X,
+  ChevronDown,
+  Star,
+} from "lucide-react";
 import { toast } from "react-toastify";
 
 interface Workout {
@@ -23,7 +30,7 @@ const MyPlan = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<SortOption | "">("");
+  const [sortBy, setSortBy] = useState<SortOption>("duration");
 
   useEffect(() => {
     const loadData = () => {
@@ -216,27 +223,35 @@ const MyPlan = () => {
           </div>
 
           {currentWorkouts.length > 0 && (
-            <div className="relative">
-              <select
-                id="sort"
-                value={sortBy}
-                onChange={(event) =>
-                  setSortBy(
-                    event.target.value as SortOption | ""
-                  )
-                }
-                className="appearance-none rounded-md border border-zinc-800 bg-[#121316] py-2.5 pl-3 pr-9 text-xs font-bold uppercase text-white outline-none focus:border-[#ccff00]"
+            <div className="flex items-center gap-2">
+              <label
+                htmlFor="sort"
+                className="text-[10px] font-bold uppercase tracking-wider text-zinc-500"
               >
-                <option value="">Sort By</option>
-                <option value="duration">Duration</option>
-                <option value="calories">Calories</option>
-                <option value="rating">Rating</option>
-              </select>
+                Sort By
+              </label>
 
-              <ChevronDown
-                size={15}
-                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500"
-              />
+              <div className="relative">
+                <select
+                  id="sort"
+                  value={sortBy}
+                  onChange={(event) =>
+                    setSortBy(
+                      event.target.value as SortOption
+                    )
+                  }
+                  className="appearance-none rounded-md border border-zinc-800 bg-[#121316] py-2.5 pl-3 pr-9 text-xs font-bold uppercase text-white outline-none focus:border-[#ccff00]"
+                >
+                  <option value="duration">Duration</option>
+                  <option value="calories">Calories</option>
+                  <option value="rating">Rating</option>
+                </select>
+
+                <ChevronDown
+                  size={15}
+                  className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                />
+              </div>
             </div>
           )}
         </div>
@@ -323,23 +338,30 @@ const MyPlan = () => {
 
                     <div className="mt-5 flex gap-6">
                       <div className="flex items-center gap-1.5 text-zinc-500">
-                        <Clock size={14} />
+                        <Clock
+                          size={14}
+                          className="text-[#ccff00]"
+                        />
                         <span className="text-[10px] font-bold">
                           {workout.duration} MIN
                         </span>
                       </div>
 
                       <div className="flex items-center gap-1.5 text-zinc-500">
-                        <Flame size={14} />
+                        <Flame
+                          size={14}
+                          className="text-[#ccff00]"
+                        />
                         <span className="text-[10px] font-bold">
                           {workout.caloriesBurned} KCAL
                         </span>
                       </div>
 
                       <div className="flex items-center gap-1.5 text-zinc-500">
-                        <span className="text-[#ccff00]">
-                          ★
-                        </span>
+                        <Star
+                          size={14}
+                          className="text-[#ccff00]"
+                        />
 
                         <span className="text-[10px] font-bold">
                           {workout.rating}
@@ -358,4 +380,3 @@ const MyPlan = () => {
 };
 
 export default MyPlan;
-
