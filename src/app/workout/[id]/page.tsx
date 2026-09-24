@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
+import { Bookmark, Plus } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface Workout {
@@ -198,10 +199,22 @@ export default function WorkoutDetails() {
 
               <div className="mb-6 overflow-hidden rounded-xl border border-zinc-900 bg-[#111215]/40">
                 {[
-                  { label: "EQUIPMENT", value: workout.equipment },
-                  { label: "DIFFICULTY", value: workout.difficulty },
-                  { label: "SETS", value: workout.sets },
-                  { label: "REPS", value: workout.reps },
+                  {
+                    label: "EQUIPMENT",
+                    value: workout.equipment,
+                  },
+                  {
+                    label: "DIFFICULTY",
+                    value: workout.difficulty,
+                  },
+                  {
+                    label: "SETS",
+                    value: workout.sets,
+                  },
+                  {
+                    label: "REPS",
+                    value: workout.reps,
+                  },
                   {
                     label: "DURATION",
                     value: `${workout.duration} min`,
@@ -259,6 +272,7 @@ export default function WorkoutDetails() {
                 onClick={handleAddToPlan}
                 className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#ccff00] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-black transition-colors hover:bg-[#bbf200]"
               >
+                <Plus size={15} />
                 <span>Add to today&apos;s plan</span>
               </button>
 
@@ -266,6 +280,7 @@ export default function WorkoutDetails() {
                 onClick={handleSaveForLater}
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-zinc-800 bg-[#121316] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
               >
+                <Bookmark size={15} />
                 <span>Save for later</span>
               </button>
             </div>
