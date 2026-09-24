@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, Flame, Check, X } from "lucide-react";
+import { Clock, Flame, Check, X, Trash2 } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface Workout {
@@ -71,7 +71,7 @@ const MyPlan = () => {
 
     window.dispatchEvent(new Event("fitlog-update"));
 
-    toast.success("Workout removed from today's plan");
+    toast.error("Workout removed from today's plan");
   };
 
   const handleRemoveFromSaved = (id: number) => {
@@ -88,7 +88,21 @@ const MyPlan = () => {
 
     window.dispatchEvent(new Event("fitlog-update"));
 
-    toast.success("Workout removed from saved");
+    toast.error("Workout removed from saved");
+  };
+
+  const handleRemoveAll = () => {
+    if (activeTab === "plan") {
+      setWorkouts([]);
+      localStorage.setItem("fitlog-plan", JSON.stringify([]));
+      toast.error("All workouts removed from today's plan");
+    } else {
+      setSaved([]);
+      localStorage.setItem("fitlog-saved", JSON.stringify([]));
+      toast.error("All saved workouts removed");
+    }
+
+    window.dispatchEvent(new Event("fitlog-update"));
   };
 
   const handleDone = (id: number) => {
@@ -167,28 +181,40 @@ const MyPlan = () => {
           </div>
         </div>
 
-        <div className="mb-6 flex w-fit rounded-lg border border-zinc-800 bg-[#121316] p-1">
-          <button
-            onClick={() => setActiveTab("plan")}
-            className={`rounded-md px-5 py-2 text-[11px] font-bold uppercase tracking-wider transition ${
-              activeTab === "plan"
-                ? "bg-[#ccff00] text-black"
-                : "text-zinc-500 hover:text-white"
-            }`}
-          >
-            Today&apos;s Plan
-          </button>
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex w-fit rounded-lg border border-zinc-800 bg-[#121316] p-1">
+            <button
+              onClick={() => setActiveTab("plan")}
+              className={`rounded-md px-5 py-2 text-[11px] font-bold uppercase tracking-wider transition ${
+                activeTab === "plan"
+                  ? "bg-[#ccff00] text-black"
+                  : "text-zinc-500 hover:text-white"
+              }`}
+            >
+              Today&apos;s Plan
+            </button>
 
-          <button
-            onClick={() => setActiveTab("saved")}
-            className={`rounded-md px-5 py-2 text-[11px] font-bold uppercase tracking-wider transition ${
-              activeTab === "saved"
-                ? "bg-[#ccff00] text-black"
-                : "text-zinc-500 hover:text-white"
-            }`}
-          >
-            Saved
-          </button>
+            <button
+              onClick={() => setActiveTab("saved")}
+              className={`rounded-md px-5 py-2 text-[11px] font-bold uppercase tracking-wider transition ${
+                activeTab === "saved"
+                  ? "bg-[#ccff00] text-black"
+                  : "text-zinc-500 hover:text-white"
+              }`}
+            >
+              Saved
+            </button>
+          </div>
+
+          {currentWorkouts.length > 0 && (
+            <button
+              onClick={handleRemoveAll}
+              className="flex items-center gap-2 rounded-md border border-red-500/30 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
+            >
+              <Trash2 size={14} />
+              Remove All
+            </button>
+          )}
         </div>
 
         {currentWorkouts.length === 0 ? (

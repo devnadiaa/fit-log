@@ -1,4 +1,3 @@
-import Navbar from "../components/shared/Navbar";
 import Banner from "../components/shared/Banner";
 import WorkoutLibrary from "../components/WorkoutLibrary/WorkoutLibrary";
 import { Workout } from "../components/WorkoutCard/WorkoutCard";
@@ -20,8 +19,6 @@ export default async function Home() {
 
   return (
     <main className="min-h-screen bg-[#07080a]">
-      <Navbar />
-
       <Banner />
 
       <WorkoutLibrary workouts={workouts} />

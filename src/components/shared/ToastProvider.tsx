@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 const ToastProvider = () => {
   return (
     <ToastContainer
-      position="top-right"
+      position="top-center"
       autoClose={2000}
       theme="dark"
     />

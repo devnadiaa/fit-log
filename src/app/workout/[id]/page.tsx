@@ -24,29 +24,42 @@ interface Workout {
 export default function WorkoutDetails() {
   const params = useParams();
   const router = useRouter();
-  const id = params?.id as string;
+  const id = Number(params?.id);
 
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!id) return;
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
-    fetch(`https://api.abcz.workers.dev/api/fitlog/${id}`)
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch");
+    const loadWorkout = async () => {
+      try {
+        const response = await fetch(
+          "https://api.abcz.workers.dev/api/fitlog"
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch workouts");
         }
 
-        return res.json();
-      })
-      .then((data) => {
-        setWorkout(data);
+        const data: Workout[] = await response.json();
+
+        const selectedWorkout = data.find(
+          (item) => item.id === id
+        );
+
+        setWorkout(selectedWorkout || null);
+      } catch {
+        setWorkout(null);
+      } finally {
         setLoading(false);
-      })
-      .catch(() => {
-        setLoading(false);
-      });
+      }
+    };
+
+    loadWorkout();
   }, [id]);
 
   const handleAddToPlan = () => {
@@ -55,7 +68,9 @@ export default function WorkoutDetails() {
     const savedPlan = localStorage.getItem("fitlog-plan");
     const plan: Workout[] = savedPlan ? JSON.parse(savedPlan) : [];
 
-    const alreadyAdded = plan.some((item) => item.id === workout.id);
+    const alreadyAdded = plan.some(
+      (item) => item.id === workout.id
+    );
 
     if (alreadyAdded) {
       toast.info("Workout is already in today's plan");
@@ -72,6 +87,8 @@ export default function WorkoutDetails() {
       JSON.stringify([...plan, workout])
     );
 
+    window.dispatchEvent(new Event("fitlog-update"));
+
     toast.success("Added to today's plan");
   };
 
@@ -83,7 +100,9 @@ export default function WorkoutDetails() {
       ? JSON.parse(savedWorkouts)
       : [];
 
-    const alreadySaved = saved.some((item) => item.id === workout.id);
+    const alreadySaved = saved.some(
+      (item) => item.id === workout.id
+    );
 
     if (alreadySaved) {
       toast.info("Workout is already saved");
@@ -95,6 +114,8 @@ export default function WorkoutDetails() {
       JSON.stringify([...saved, workout])
     );
 
+    window.dispatchEvent(new Event("fitlog-update"));
+
     toast.success("Saved for later");
   };
 
@@ -102,10 +123,10 @@ export default function WorkoutDetails() {
     return (
       <main className="flex min-h-screen items-center justify-center bg-[#07080a]">
         <div className="flex flex-col items-center gap-3">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#ccff00] border-t-transparent"></div>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#ccff00] border-t-transparent" />
 
           <p className="text-xs font-bold uppercase tracking-widest text-zinc-500">
-            Loading Workout…
+            Loading Workout...
           </p>
         </div>
       </main>
@@ -123,7 +144,7 @@ export default function WorkoutDetails() {
           </h2>
 
           <p className="mb-6 mt-1 text-xs text-zinc-500">
-            Failed to connect to the fitness server.
+            This workout could not be found.
           </p>
 
           <button
@@ -177,22 +198,10 @@ export default function WorkoutDetails() {
 
               <div className="mb-6 overflow-hidden rounded-xl border border-zinc-900 bg-[#111215]/40">
                 {[
-                  {
-                    label: "EQUIPMENT",
-                    value: workout.equipment,
-                  },
-                  {
-                    label: "DIFFICULTY",
-                    value: workout.difficulty,
-                  },
-                  {
-                    label: "SETS",
-                    value: workout.sets,
-                  },
-                  {
-                    label: "REPS",
-                    value: workout.reps,
-                  },
+                  { label: "EQUIPMENT", value: workout.equipment },
+                  { label: "DIFFICULTY", value: workout.difficulty },
+                  { label: "SETS", value: workout.sets },
+                  { label: "REPS", value: workout.reps },
                   {
                     label: "DURATION",
                     value: `${workout.duration} min`,
@@ -227,18 +236,20 @@ export default function WorkoutDetails() {
                 </h3>
 
                 <ol className="space-y-2.5">
-                  {workout.instructions.map((instruction, index) => (
-                    <li
-                      key={index}
-                      className="flex gap-2.5 text-xs leading-relaxed text-zinc-400 md:text-sm"
-                    >
-                      <span className="font-bold text-zinc-600">
-                        {index + 1}.
-                      </span>
+                  {workout.instructions.map(
+                    (instruction, index) => (
+                      <li
+                        key={index}
+                        className="flex gap-2.5 text-xs leading-relaxed text-zinc-400 md:text-sm"
+                      >
+                        <span className="font-bold text-zinc-600">
+                          {index + 1}.
+                        </span>
 
-                      <span>{instruction}</span>
-                    </li>
-                  ))}
+                        <span>{instruction}</span>
+                      </li>
+                    )
+                  )}
                 </ol>
               </div>
             </div>
@@ -248,21 +259,6 @@ export default function WorkoutDetails() {
                 onClick={handleAddToPlan}
                 className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#ccff00] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-black transition-colors hover:bg-[#bbf200]"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2.5}
-                  stroke="currentColor"
-                  className="h-4 w-4"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4.5v15m7.5-7.5h-15"
-                  />
-                </svg>
-
                 <span>Add to today&apos;s plan</span>
               </button>
 
@@ -270,21 +266,6 @@ export default function WorkoutDetails() {
                 onClick={handleSaveForLater}
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-zinc-800 bg-[#121316] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="h-3.5 w-3.5"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z"
-                  />
-                </svg>
-
                 <span>Save for later</span>
               </button>
             </div>
