@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Clock, Flame, Check, X, Trash2 } from "lucide-react";
+import { Clock, Flame, Check, X, ChevronDown } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface Workout {
@@ -16,11 +16,14 @@ interface Workout {
   rating: number;
 }
 
+type SortOption = "duration" | "calories" | "rating";
+
 const MyPlan = () => {
   const [activeTab, setActiveTab] = useState<"plan" | "saved">("plan");
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [saved, setSaved] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortBy, setSortBy] = useState<SortOption | "">("");
 
   useEffect(() => {
     const loadData = () => {
@@ -46,6 +49,26 @@ const MyPlan = () => {
 
   const currentWorkouts =
     activeTab === "plan" ? workouts : saved;
+
+  const sortedWorkouts = [...currentWorkouts];
+
+  if (sortBy === "duration") {
+    sortedWorkouts.sort(
+      (a, b) => b.duration - a.duration
+    );
+  }
+
+  if (sortBy === "calories") {
+    sortedWorkouts.sort(
+      (a, b) => b.caloriesBurned - a.caloriesBurned
+    );
+  }
+
+  if (sortBy === "rating") {
+    sortedWorkouts.sort(
+      (a, b) => b.rating - a.rating
+    );
+  }
 
   const totalMinutes = currentWorkouts.reduce(
     (total, workout) => total + workout.duration,
@@ -89,20 +112,6 @@ const MyPlan = () => {
     window.dispatchEvent(new Event("fitlog-update"));
 
     toast.error("Workout removed from saved");
-  };
-
-  const handleRemoveAll = () => {
-    if (activeTab === "plan") {
-      setWorkouts([]);
-      localStorage.setItem("fitlog-plan", JSON.stringify([]));
-      toast.error("All workouts removed from today's plan");
-    } else {
-      setSaved([]);
-      localStorage.setItem("fitlog-saved", JSON.stringify([]));
-      toast.error("All saved workouts removed");
-    }
-
-    window.dispatchEvent(new Event("fitlog-update"));
   };
 
   const handleDone = (id: number) => {
@@ -207,13 +216,28 @@ const MyPlan = () => {
           </div>
 
           {currentWorkouts.length > 0 && (
-            <button
-              onClick={handleRemoveAll}
-              className="flex items-center gap-2 rounded-md border border-red-500/30 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-red-400 transition hover:bg-red-500/10 hover:text-red-300"
-            >
-              <Trash2 size={14} />
-              Remove All
-            </button>
+            <div className="relative">
+              <select
+                id="sort"
+                value={sortBy}
+                onChange={(event) =>
+                  setSortBy(
+                    event.target.value as SortOption | ""
+                  )
+                }
+                className="appearance-none rounded-md border border-zinc-800 bg-[#121316] py-2.5 pl-3 pr-9 text-xs font-bold uppercase text-white outline-none focus:border-[#ccff00]"
+              >
+                <option value="">Sort By</option>
+                <option value="duration">Duration</option>
+                <option value="calories">Calories</option>
+                <option value="rating">Rating</option>
+              </select>
+
+              <ChevronDown
+                size={15}
+                className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500"
+              />
+            </div>
           )}
         </div>
 
@@ -236,7 +260,7 @@ const MyPlan = () => {
           </div>
         ) : (
           <div className="flex flex-col gap-5">
-            {currentWorkouts.map((workout) => (
+            {sortedWorkouts.map((workout) => (
               <div
                 key={workout.id}
                 className="overflow-hidden rounded-2xl border border-zinc-800 bg-[#121316]"
@@ -274,7 +298,9 @@ const MyPlan = () => {
 
                         {activeTab === "plan" && (
                           <button
-                            onClick={() => handleDone(workout.id)}
+                            onClick={() =>
+                              handleDone(workout.id)
+                            }
                             className="flex items-center gap-2 rounded-md bg-[#ccff00] px-4 py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-black"
                           >
                             <Check size={14} />
@@ -298,7 +324,6 @@ const MyPlan = () => {
                     <div className="mt-5 flex gap-6">
                       <div className="flex items-center gap-1.5 text-zinc-500">
                         <Clock size={14} />
-
                         <span className="text-[10px] font-bold">
                           {workout.duration} MIN
                         </span>
@@ -306,14 +331,15 @@ const MyPlan = () => {
 
                       <div className="flex items-center gap-1.5 text-zinc-500">
                         <Flame size={14} />
-
                         <span className="text-[10px] font-bold">
                           {workout.caloriesBurned} KCAL
                         </span>
                       </div>
 
                       <div className="flex items-center gap-1.5 text-zinc-500">
-                        <span className="text-[#ccff00]">★</span>
+                        <span className="text-[#ccff00]">
+                          ★
+                        </span>
 
                         <span className="text-[10px] font-bold">
                           {workout.rating}
@@ -332,3 +358,4 @@ const MyPlan = () => {
 };
 
 export default MyPlan;
+
