@@ -3,7 +3,7 @@ import Image from "next/image";
 const Footer = () => {
   return (
     <footer className="w-full border-t border-zinc-900 bg-[#07080a]">
-      <div className="flex h-16 items-center justify-between px-6 md:px-12">
+      <div className="flex min-h-24 flex-col items-center justify-center gap-3 px-6 py-5 md:h-16 md:flex-row md:justify-between md:gap-0 md:px-12">
         <div className="flex items-center gap-2.5">
           <Image
             src="/assets/logo.png"
@@ -18,7 +18,7 @@ const Footer = () => {
           </span>
         </div>
 
-        <p className="text-right text-[10px] font-medium text-zinc-600">
+        <p className="text-center text-[10px] font-medium leading-relaxed text-zinc-600 md:text-right">
           © 2026 FitLog — Workout Library. Train hard, log honest.
         </p>
       </div>
