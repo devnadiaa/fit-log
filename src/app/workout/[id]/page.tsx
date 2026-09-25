@@ -188,11 +188,11 @@ export default function WorkoutDetails() {
   }
 
   return (
-    <main className="min-h-screen bg-[#07080a] px-4 py-8 md:px-12">
+    <main className="w-full bg-[#07080a] px-4 py-6 md:px-8">
       <div className="mx-auto max-w-[1280px]">
-        <div className="flex flex-col gap-10 overflow-hidden rounded-2xl border border-zinc-900 bg-[#0c0d10] p-6 md:p-8 lg:flex-row">
-          <div className="relative flex min-h-[350px] flex-1 items-center justify-center rounded-2xl border border-zinc-900/60 bg-[#13151a] p-6 md:p-12 lg:min-h-[520px]">
-            <div className="relative aspect-square h-full w-full">
+        <div className="grid overflow-hidden rounded-2xl border border-zinc-900 bg-[#0c0d10] lg:grid-cols-2">
+          <div className="relative flex h-[360px] items-center justify-center border-b border-zinc-900 bg-[#13151a] p-8 lg:h-[680px] lg:border-b-0 lg:border-r">
+            <div className="relative aspect-square h-full w-full max-w-[500px]">
               <Image
                 src={workout.image}
                 alt={workout.name}
@@ -204,17 +204,17 @@ export default function WorkoutDetails() {
             </div>
           </div>
 
-          <div className="flex flex-1 flex-col justify-between">
+          <div className="flex flex-col p-6 lg:p-8">
             <div>
               <h1 className="mb-2 text-2xl font-black uppercase tracking-tight text-white md:text-3xl">
                 {workout.name}
               </h1>
 
-              <p className="mb-4 text-xs leading-relaxed text-zinc-500 md:text-sm">
+              <p className="mb-3 text-xs leading-relaxed text-zinc-500 md:text-sm">
                 {workout.description}
               </p>
 
-              <div className="mb-6 flex flex-wrap gap-1.5">
+              <div className="mb-4 flex flex-wrap gap-1.5">
                 {workout.muscleGroups.map((muscle) => (
                   <span
                     key={muscle}
@@ -225,7 +225,7 @@ export default function WorkoutDetails() {
                 ))}
               </div>
 
-              <div className="mb-6 overflow-hidden rounded-xl border border-zinc-900 bg-[#111215]/40">
+              <div className="mb-4 overflow-hidden rounded-xl border border-zinc-900 bg-[#111215]/40">
                 {[
                   {
                     label: "EQUIPMENT",
@@ -258,7 +258,7 @@ export default function WorkoutDetails() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="flex items-center justify-between border-b border-zinc-900 px-5 py-3.5 text-[11px] last:border-none"
+                    className="flex items-center justify-between border-b border-zinc-900 px-4 py-2.5 text-[10px] last:border-none"
                   >
                     <span className="font-bold uppercase tracking-wider text-zinc-500">
                       {item.label}
@@ -271,17 +271,17 @@ export default function WorkoutDetails() {
                 ))}
               </div>
 
-              <div className="mb-6">
-                <h3 className="mb-3 text-[11px] font-black uppercase tracking-widest text-white">
+              <div className="mb-4">
+                <h3 className="mb-2 text-[11px] font-black uppercase tracking-widest text-white">
                   INSTRUCTIONS
                 </h3>
 
-                <ol className="space-y-2.5">
+                <ol className="space-y-1.5">
                   {workout.instructions.map(
                     (instruction, index) => (
                       <li
                         key={index}
-                        className="flex gap-2.5 text-xs leading-relaxed text-zinc-400 md:text-sm"
+                        className="flex gap-2 text-xs leading-relaxed text-zinc-400"
                       >
                         <span className="font-bold text-zinc-600">
                           {index + 1}.
@@ -295,11 +295,11 @@ export default function WorkoutDetails() {
               </div>
             </div>
 
-            <div className="flex flex-col gap-3 border-t border-zinc-900/80 pt-4 sm:flex-row">
+            <div className="mt-auto flex flex-col gap-2 border-t border-zinc-900/80 pt-3 sm:flex-row">
               <button
                 onClick={handleAddToPlan}
                 disabled={planFull}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-md py-3.5 text-[11px] font-extrabold uppercase tracking-wider transition-colors ${
+                className={`flex flex-1 items-center justify-center gap-2 rounded-md py-3 text-[11px] font-extrabold uppercase tracking-wider transition-colors ${
                   planFull
                     ? "cursor-not-allowed bg-zinc-800 text-zinc-500"
                     : "bg-[#ccff00] text-black hover:bg-[#bbf200]"
@@ -316,7 +316,7 @@ export default function WorkoutDetails() {
 
               <button
                 onClick={handleSaveForLater}
-                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-zinc-800 bg-[#121316] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
+                className="flex flex-1 items-center justify-center gap-2 rounded-md border border-zinc-800 bg-[#121316] py-3 text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
               >
                 <Bookmark size={15} />
 
