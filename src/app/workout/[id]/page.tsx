@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { Bookmark, Plus } from "lucide-react";
+import { Bookmark, CalendarPlus } from "lucide-react";
 import { toast } from "react-toastify";
 
 interface Workout {
@@ -67,6 +67,7 @@ export default function WorkoutDetails() {
   useEffect(() => {
     const checkPlan = () => {
       const savedPlan = localStorage.getItem("fitlog-plan");
+
       const plan: Workout[] = savedPlan
         ? JSON.parse(savedPlan)
         : [];
@@ -87,7 +88,10 @@ export default function WorkoutDetails() {
     if (!workout) return;
 
     const savedPlan = localStorage.getItem("fitlog-plan");
-    const plan: Workout[] = savedPlan ? JSON.parse(savedPlan) : [];
+
+    const plan: Workout[] = savedPlan
+      ? JSON.parse(savedPlan)
+      : [];
 
     const alreadyAdded = plan.some(
       (item) => item.id === workout.id
@@ -120,6 +124,7 @@ export default function WorkoutDetails() {
     if (!workout) return;
 
     const savedWorkouts = localStorage.getItem("fitlog-saved");
+
     const saved: Workout[] = savedWorkouts
       ? JSON.parse(savedWorkouts)
       : [];
@@ -300,7 +305,8 @@ export default function WorkoutDetails() {
                     : "bg-[#ccff00] text-black hover:bg-[#bbf200]"
                 }`}
               >
-                <Plus size={15} />
+                <CalendarPlus size={14} strokeWidth={2.5} />
+
                 <span>
                   {planFull
                     ? "Today's plan is full"
@@ -313,6 +319,7 @@ export default function WorkoutDetails() {
                 className="flex flex-1 items-center justify-center gap-2 rounded-md border border-zinc-800 bg-[#121316] py-3.5 text-[11px] font-extrabold uppercase tracking-wider text-zinc-400 transition-colors hover:bg-zinc-900 hover:text-white"
               >
                 <Bookmark size={15} />
+
                 <span>Save for later</span>
               </button>
             </div>
